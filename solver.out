@@ -1,0 +1,154 @@
+pattern    N  OPTIMAL(E[g])  MAXINFO(E[g])  BESTCAND(E[g])
+----------------------------------------------------------------
+YYGBY      1  steal  1.000  aback  1.000  steal  1.000
+YBGGB      1  opera  1.000  aback  1.000  opera  1.000
+YGBGY      1  ultra  1.000  aback  1.000  ultra  1.000
+BYGGB      1  leery  1.000  aback  1.000  leery  1.000
+YGGYB      1  clear  1.000  aback  1.000  clear  1.000
+GBGGG      1  avert  1.000  aback  1.000  avert  1.000
+GBYYY      1  after  1.000  aback  1.000  after  1.000
+BGGGB      1  clerk  1.000  aback  1.000  clerk  1.000
+GBYBG      1  asset  1.000  aback  1.000  asset  1.000
+YGBYB      1  flair  1.000  aback  1.000  flair  1.000
+GBGYB      1  arena  1.000  aback  1.000  arena  1.000
+BYBGY      1  twirl  1.000  aback  1.000  twirl  1.000
+GYBBG      1  adult  1.000  aback  1.000  adult  1.000
+YYYYY      1  later  1.000  aback  1.000  later  1.000
+YBYYG      1  react  1.000  aback  1.000  react  1.000
+BYGBY      1  steel  1.000  aback  1.000  steel  1.000
+YBYGG      1  heart  1.000  aback  1.000  heart  1.000
+YYBGB      1  snarl  1.000  aback  1.000  snarl  1.000
+GGBGB      1  alarm  1.000  aback  1.000  alarm  1.000
+GGYYY      1  alter  1.000  aback  1.000  alter  1.000
+YGBGB      1  flora  1.000  aback  1.000  flora  1.000
+YYGBB      1  ideal  1.000  aback  1.000  ideal  1.000
+GGBYY      1  altar  1.000  aback  1.000  altar  1.000
+YBGYY      1  tread  1.000  aback  1.000  tread  1.000
+YYYGB      2  learn  1.500  acorn  2.000  learn  1.500
+BGYBY      2  elite  1.500  abide  2.000  elite  1.500
+BGBYB      2  floor  1.500  abbot  2.000  floor  1.500
+YBBGY      2  stark  1.500  aback  2.000  stark  1.500
+GYBBY      2  aptly  1.500  abbey  2.000  aptly  1.500
+YBGYG      2  great  1.500  adage  2.000  great  1.500
+BBGGY      2  stern  1.500  abase  2.000  stern  1.500
+GBGBG      2  adept  1.500  abide  2.000  adept  1.500
+BGBGG      2  blurt  1.500  aback  2.000  blurt  1.500
+GBBGG      2  abort  1.500  aback  2.000  abort  1.500
+GBGBB      2  ahead  1.500  aback  2.000  ahead  1.500
+GGBBG      2  allot  1.500  abbot  2.000  allot  1.500
+BYBYY      2  troll  1.500  abbey  2.000  troll  1.500
+BGBBY      3  cloth  1.667  aback  2.000  cloth  1.667
+BBGYY      3  steer  1.667  abhor  2.000  steer  1.667
+YYBYY      3  trail  1.667  abide  2.000  trail  1.667
+YGYGB      3  badge  2.000  badge  2.000  blare  2.000
+YGYBY      3  beset  2.000  beset  2.000  elate  2.000
+YBGBG      3  cheat  1.667  ascot  2.000  cheat  1.667
+BYBGB      3  swirl  1.667  abhor  2.000  swirl  1.667
+GBBYY      3  actor  1.667  aback  2.000  actor  1.667
+BBGGG      3  acorn  2.000  acorn  2.000  exert  2.000
+BGBGB      3  blurb  1.667  abase  2.000  blurb  1.667
+YGGBG      3  aback  2.000  aback  2.000  bleat  2.000
+GBYBY      4  abate  1.750  aback  2.000  abate  1.750
+GBYGB      4  afoul  2.000  afoul  2.000  adore  2.500
+BYYBG      4  inlet  1.750  aisle  2.000  inlet  1.750
+YYBBG      4  fault  1.750  fable  2.000  fault  1.750
+BYGBG      4  admin  2.000  admin  2.000  smelt  2.000
+YBYGY      4  teary  1.750  artsy  2.000  teary  1.750
+GBBBY      4  antic  1.750  acorn  2.000  antic  1.750
+YBBGG      4  amuse  2.000  amuse  2.000  smart  2.000
+YGGBB      5  aping  2.000  aping  2.000  glean  2.000
+YBGBY      5  dusky  2.000  dusky  2.000  stead  2.000
+BGGBG      5  fleet  1.800  beset  2.000  fleet  1.800
+BGBBG      5  flint  1.800  afoul  2.000  flint  1.800
+BBYGY      5  metro  1.800  among  2.000  metro  1.800
+BBGYG      5  crest  1.800  caper  2.000  crest  1.800
+GBBGB      5  acorn  1.800  acorn  1.800  acorn  1.800
+BBGGB      5  beefy  2.000  beefy  2.000  every  2.000
+GGYBB      6  alien  2.000  avian  2.000  alien  2.000
+BBBGY      6  hunky  2.000  hunky  2.000  stork  2.000
+BGYYB      7  edify  2.143  edify  2.143  flier  2.429
+YGBBG      7  basin  2.143  basin  2.143  blast  2.143
+YYYBG      7  leant  2.143  scald  2.143  leant  2.143
+BBBGG      7  epoch  2.000  epoch  2.000  shirt  2.143
+GBYYB      7  agile  2.000  agile  2.000  arise  2.000
+YBGBB      8  knead  1.875  chunk  2.000  knead  1.875
+BYBBY      8  hotly  1.875  bully  2.000  hotly  1.875
+BBGBY      8  aside  2.000  aside  2.000  steed  2.000
+YYYBY      8  fatty  2.125  fatty  2.125  fetal  2.250
+YBBYG      9  craft  2.111  cargo  2.222  craft  2.111
+GYYBB      9  binge  2.111  binge  2.111  agile  2.222
+YBYBG      9  fancy  2.111  fancy  2.111  feast  2.111
+BGGBB      9  bleed  2.111  sheep  2.111  bleed  2.111
+GYBBB      9  aping  2.111  opine  2.111  afoul  2.222
+GBBBG     10  spout  2.100  spout  2.100  adopt  2.200
+BBYYG     10  beret  2.100  rebus  2.100  beret  2.100
+GGBBB     10  aglow  2.200  bayou  2.200  allow  2.300
+YBYGB     10  bench  2.100  bench  2.100  heard  2.400
+YGYBB     10  skimp  2.500  embed  2.700  blade  2.900
+BYBBG     11  aping  2.182  pubic  2.182  guilt  2.273
+GBBYB     11  arbor  2.000  arbor  2.000  arbor  2.000
+YBGYB     12  whack  2.417  crowd  2.500  cream  2.583
+YYYYB     12  mangy  2.167  mangy  2.167  relay  2.167
+BBGBG     13  scene  2.154  scene  2.154  scent  2.231
+BYYBY     13  hotly  2.077  hotly  2.077  hotel  2.231
+YBYYY     13  cheek  2.308  match  2.308  trace  2.462
+BYGBB     15  wheel  2.200  swill  2.267  wheel  2.200
+YYBBY     16  tonal  2.250  satin  2.312  tonal  2.250
+BBYGB     16  chime  2.312  chime  2.312  chore  2.500
+YBBYY     17  tipsy  2.118  tipsy  2.118  party  2.176
+GBBBB     20  again  2.250  shiny  2.250  again  2.250
+BYBYB     20  disco  2.300  disco  2.300  drill  2.350
+BYYYB     20  river  2.300  river  2.300  liver  2.350
+GBYBB     20  abase  2.400  spade  2.400  abase  2.400
+BBYBG     21  bison  2.286  bison  2.286  onset  2.429
+YYBYB     22  moral  2.409  vocal  2.455  moral  2.409
+BBGYB     22  creed  2.409  creed  2.409  creed  2.409
+BGYBB     23  disco  2.391  scope  2.435  close  2.522
+YBYBY     23  shack  2.609  shack  2.609  taste  2.652
+BBBYG     24  suing  2.250  suing  2.250  frost  2.333
+YBBBG     24  thing  2.417  thing  2.417  tacit  2.750
+BBBGB     25  shown  2.240  shown  2.240  shorn  2.280
+YBBGB     28  duchy  2.429  duchy  2.429  chard  2.464
+BBGBB     30  dense  2.300  dense  2.300  scene  2.400
+YGBBB     30  spank  2.500  spank  2.500  clasp  2.600
+BBBYY     31  mouth  2.387  mouth  2.387  forth  2.419
+BBYYY     35  tutor  2.486  tutor  2.486  outer  2.571
+YYYBB     42  lapse  2.595  level  2.714  lapse  2.595
+BBBBG     45  sonic  2.533  sonic  2.533  shunt  2.600
+BBYBY     47  suite  2.468  shine  2.489  suite  2.468
+YBYYB     49  pence  2.796  pence  2.796  carve  2.898
+YBBBY     49  pinto  2.714  pansy  2.755  batch  2.878
+BGBBB     52  spunk  2.538  spunk  2.538  slink  2.692
+BYYBB     59  belie  2.627  belie  2.627  belie  2.627
+YYBBB     60  silly  2.567  silly  2.567  sally  2.567
+YBYBB     61  space  2.656  sauce  2.689  space  2.656
+YBBYB     77  doing  2.701  scion  2.792  brand  2.753
+BBBBY     84  sonic  2.655  hound  2.679  pinto  2.714
+BYBBB     84  could  2.702  silly  2.786  could  2.702
+BBBYB     98  doing  2.653  scion  2.704  bring  2.724
+YBBBB    110  sonic  2.682  sonic  2.682  mason  2.736
+BBYBB    145  doing  2.710  sonic  2.710  shine  2.710
+BBYYB    160  disco  3.038  poise  3.069  drier  3.131
+BBBBB    196  spiny  2.806  sonic  2.842  spiny  2.806
+
+================================================================
+ALERT opener, optimal play (answer-dictionary guesses):
+  expected total guesses = 3.5045
+  vs pure best-candidate strategy: +0.0523 guesses/game
+  vs pure max-information strategy: +0.0354 guesses/game
+
+Across 130 non-trivial patterns, the optimal 2nd guess is:
+  a candidate (could be the answer):    74 (57%)
+  equal to the max-information word:    47 (36%)
+  equal to the best-candidate word:     74 (57%)
+  a third word (neither extreme):       13 (10%)
+
+Hardest patterns (highest expected guesses after ALERT):
+  BBYYB  N=160   E[g]=3.038
+  BBBBB  N=196   E[g]=2.806
+  YBYYB  N=49    E[g]=2.796
+  YBBBY  N=49    E[g]=2.714
+  BBYBB  N=145   E[g]=2.710
+  BYBBB  N=84    E[g]=2.702
+  YBBYB  N=77    E[g]=2.701
+  YBBBB  N=110   E[g]=2.682

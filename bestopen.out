@@ -1,0 +1,11 @@
+Optimal first guess (full 12972 guessable, candidate-only look-ahead):
+rank    word   E[total]
+--------------------------
+1       salet  3.5175  (probe)
+2       slate  3.5184  (ans)
+3       trace  3.5192  (ans)
+4       crate  3.5266  (ans)
+5       crane  3.5326  (ans)
+6       alert  3.5568  (ans)
+7       raise  3.5827  (ans)
+8       soare  3.5931  (probe)
