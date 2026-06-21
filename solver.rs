@@ -101,12 +101,60 @@ fn build_lb(n: usize) -> Vec<f64> {
     lb
 }
 
+// ---- recency prior --------------------------------------------------------
+// Wordle answers are not re-used for a long time: across the full history no
+// word has ever repeated within ~524 games, and only 13 words ever repeated at
+// all (each exactly once, after >500 games). So the prior over "which word is
+// the secret" is: words used within the last COOLDOWN games are excluded, and
+// older ones recover toward their base weight on a TAU timescale. Never-used
+// words sit at full weight 1.
+const COOLDOWN: f64 = 500.0;
+const TAU: f64 = 800.0;
+
+// `t` = number of games since the word was last used, measured for the upcoming
+// puzzle (the most recently used word has t = 1). None = never used.
+fn recency_factor(t: Option<f64>) -> f64 {
+    match t {
+        None => 1.0,
+        Some(t) if t <= COOLDOWN => 0.0,
+        Some(t) => 1.0 - (-(t - COOLDOWN) / TAU).exp(),
+    }
+}
+
+// Parse the dated answer archive (id,solution,print_date,...). Returns, per
+// word, games-since-last-use for the upcoming puzzle. Chronological order in
+// the file is assumed (it is sorted by date).
+fn load_history(path: &str) -> HashMap<[u8; 5], f64> {
+    let txt = match fs::read_to_string(path) {
+        Ok(t) => t,
+        Err(_) => return HashMap::new(),
+    };
+    let mut order: Vec<[u8; 5]> = Vec::new();
+    for line in txt.lines().skip(1) {
+        let w = match line.split(',').nth(1) {
+            Some(s) => s.trim(),
+            None => continue,
+        };
+        if w.len() == 5 && w.bytes().all(|b| b.is_ascii_lowercase()) {
+            let b = w.as_bytes();
+            order.push([b[0], b[1], b[2], b[3], b[4]]);
+        }
+    }
+    let n = order.len();
+    let mut last: HashMap<[u8; 5], usize> = HashMap::new();
+    for (i, w) in order.iter().enumerate() {
+        last.insert(*w, i); // overwrites -> keeps the most recent index
+    }
+    last.into_iter().map(|(w, i)| (w, (n - i) as f64)).collect()
+}
+
 struct Solver<'a> {
     a: usize,         // number of answers (candidate-column count)
     ng: usize,        // number of guessable words
     pat: &'a [u8],    // ng * a matrix: feedback(guess g, answer a)
     a2g: &'a [u32],   // answer column -> index in the guessable list
     g2a: &'a [i32],   // guessable index -> answer column, or -1
+    w: &'a [f64],     // prior weight per answer column (recency prior)
     lb: &'a [f64],
     memo: HashMap<Vec<u32>, (f64, u32)>,  // depth >= 1 (candidate guesses only)
     memo0: HashMap<Vec<u32>, (f64, u32)>, // depth 0 (full guessable universe)
@@ -119,6 +167,39 @@ impl<'a> Solver<'a> {
     #[inline]
     fn pat(&self, g: u32, a: u32) -> u8 {
         self.pat[g as usize * self.a + a as usize]
+    }
+
+    #[inline]
+    fn wsum(&self, s: &[u32]) -> f64 {
+        s.iter().map(|&c| self.w[c as usize]).sum()
+    }
+
+    // Admissible weighted lower bound on f(S): assume a perfect 243-ary tree
+    // (one outcome solves now, 242 branch), with the heaviest words placed at
+    // the shallowest depths. No real guess can do better, and the heaviest-
+    // shallowest assignment minimises the weighted average -> this never
+    // exceeds the true weighted cost, so it is safe to prune with.
+    fn global_lb(&self, s: &[u32]) -> f64 {
+        if s.len() <= 1 {
+            return 1.0;
+        }
+        let mut ws: Vec<f64> = s.iter().map(|&c| self.w[c as usize]).collect();
+        ws.sort_unstable_by(|a, b| b.partial_cmp(a).unwrap()); // descending
+        let total: f64 = ws.iter().sum();
+        let mut acc = 0f64; // sum of weight * extra-depth
+        let mut depth = 0u32;
+        let mut level_capacity = 1usize; // depth 0 holds 1 word (solved now)
+        let mut filled = 0usize;
+        for &wv in &ws {
+            if filled == level_capacity {
+                depth += 1;
+                level_capacity = level_capacity.saturating_mul(242);
+                filled = 0;
+            }
+            acc += wv * depth as f64;
+            filled += 1;
+        }
+        1.0 + acc / total
     }
 
     // f(S): expected guesses to identify the answer, optimal play. S is a list
@@ -182,11 +263,17 @@ impl<'a> Solver<'a> {
         }
         order.sort_by(|x, y| x.0.partial_cmp(&y.0).unwrap());
 
-        // Pass 2: branch & bound, best-LB-first.
+        // Pass 2: branch & bound. The count-based `order` is used only to try
+        // promising guesses first (ordering never affects correctness). For the
+        // actual cutoff we use the weighted admissible bound `glb`: once the
+        // incumbent reaches that floor no remaining guess can beat it. (The old
+        // `lbg >= best` cutoff is unsafe under a non-uniform prior, since a
+        // uniform count bound can exceed the true weighted cost.)
+        let glb = self.global_lb(s);
         let mut best = f64::INFINITY;
         let mut best_g = self.a2g[s[0] as usize];
-        for (lbg, g) in order {
-            if lbg >= best {
+        for (_lbg, g) in order {
+            if glb >= best {
                 break;
             }
             let c = self.cost_of_guess(g, s, best, depth);
@@ -204,8 +291,13 @@ impl<'a> Solver<'a> {
         (best, best_g)
     }
 
+    // Expected guesses under the recency prior: E = 1 + Σ_p W(S_p)·f(S_p) / W(S),
+    // where the sum is over non-green feedback buckets (green = solved now) and
+    // W(·) is the total prior weight. Weighting by W instead of bucket size is
+    // the whole point of the prior change.
     fn cost_of_guess(&mut self, g: u32, s: &[u32], bound: f64, depth: u32) -> f64 {
         let nb = s.len();
+        let wtot = self.wsum(s);
         let mut v: Vec<(u8, u32)> = Vec::with_capacity(nb);
         for &a in s {
             let p = self.pat(g, a);
@@ -230,13 +322,13 @@ impl<'a> Solver<'a> {
             }
             sub.sort_unstable();
             let (c, _) = self.solve(&sub, depth + 1);
-            sum += sub.len() as f64 * c;
-            if 1.0 + sum / nb as f64 >= bound {
+            sum += self.wsum(&sub) * c;
+            if 1.0 + sum / wtot >= bound {
                 return f64::INFINITY; // pruned
             }
             i = j;
         }
-        1.0 + sum / nb as f64
+        1.0 + sum / wtot
     }
 
     fn cost_exact(&mut self, g: u32, s: &[u32]) -> f64 {
@@ -288,7 +380,33 @@ impl<'a> Solver<'a> {
 }
 
 fn main() {
-    let answers = load("wordle-answers-alphabetical.txt");
+    let raw_answers = load("wordle-answers-alphabetical.txt");
+
+    // Apply the recency prior: drop words still inside the cooldown window and
+    // attach a recovery weight to the rest. `weight` stays aligned to `answers`.
+    let history = load_history("wordle-history.csv");
+    let mut answers: Vec<[u8; 5]> = Vec::new();
+    let mut weight: Vec<f64> = Vec::new();
+    let (mut excluded, mut recovering, mut never_used) = (0usize, 0usize, 0usize);
+    for w in &raw_answers {
+        let f = recency_factor(history.get(w).copied());
+        if f <= 0.0 {
+            excluded += 1;
+            continue;
+        }
+        if history.contains_key(w) {
+            recovering += 1;
+        } else {
+            never_used += 1;
+        }
+        answers.push(*w);
+        weight.push(f);
+    }
+    eprintln!(
+        "recency prior: {} active candidates ({} excluded by {}-game cooldown; {} recovering, {} never used)",
+        answers.len(), excluded, COOLDOWN as u32, recovering, never_used
+    );
+
     // Guessable list = combined legal guesses; fall back to answers if absent.
     let guesses = match fs::metadata("wordle-guessable.txt") {
         Ok(_) => load("wordle-guessable.txt"),
@@ -329,6 +447,7 @@ fn main() {
         pat: &pat,
         a2g: &a2g,
         g2a: &g2a,
+        w: &weight,
         lb: &lb,
         memo: HashMap::new(),
         memo0: HashMap::new(),
@@ -399,9 +518,10 @@ fn run_bestopen(solver: &mut Solver, guesses: &[[u8; 5]]) {
     // Cap at MAX_SWEEP evaluations — the ordering by LB means the true optimum
     // is overwhelmingly likely to appear within the first few hundred.
     const MAX_SWEEP: usize = 500;
+    let glb_all = solver.global_lb(&all); // weighted admissible floor (prior-safe)
     let mut swept = 0usize;
-    for (lbg, g) in &order {
-        if *lbg >= incumbent { break; }
+    for (_lbg, g) in &order {
+        if incumbent <= glb_all { break; } // no guess can beat the weighted floor
         if seeded.contains(g) { continue; }
         let c = solver.cost_of_guess(*g, &all, incumbent, 0);
         swept += 1;
@@ -575,6 +695,8 @@ fn run_selftest(solver: &mut Solver, alert: u32) {
     let a = solver.a;
     let mut dist = [0u32; 12];
     let mut total = 0u64;
+    let mut wtotal = 0f64; // prior-weighted guess count
+    let mut wsum = 0f64;   // total prior weight
     let mut worst = 0usize;
     let mut fails = 0u32;
 
@@ -600,6 +722,9 @@ fn run_selftest(solver: &mut Solver, alert: u32) {
             }
         }
         total += turn as u64;
+        let wt = solver.w[target as usize];
+        wtotal += wt * turn as f64;
+        wsum += wt;
         worst = worst.max(turn);
         if turn < dist.len() {
             dist[turn] += 1;
@@ -609,8 +734,9 @@ fn run_selftest(solver: &mut Solver, alert: u32) {
         }
     }
 
-    println!("Self-test: SALET opener, recommender plays all {} answers.", a);
-    println!("  average guesses = {:.4}", total as f64 / a as f64);
+    println!("Self-test: SALET opener, recommender plays all {} active answers.", a);
+    println!("  average guesses (uniform)        = {:.4}", total as f64 / a as f64);
+    println!("  average guesses (recency-prior)  = {:.4}", wtotal / wsum);
     println!("  worst case      = {} guesses", worst);
     println!("  failures (>6)   = {}", fails);
     for k in 1..dist.len() {
